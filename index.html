@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ignite Briquetas — Fuego Perfecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          fire: { DEFAULT: '#FF5A1F', light: '#FF7A45', dark: '#CC3A00', ember: '#FF9A3C' },
+          coal: { DEFAULT: '#0D0D0D', 900: '#111111', 800: '#1A1A1A', 700: '#252525', 600: '#333333', 500: '#4A4A4A' },
+          ash: { DEFAULT: '#C8C0B8', light: '#E8E0D8', dark: '#928880' }
+        },
+        fontFamily: {
+          display: ['Bebas Neue', 'cursive'],
+          serif: ['Crimson Pro', 'Georgia', 'serif'],
+          mono: ['Space Mono', 'monospace'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  :root {
+    --fire: #FF5A1F;
+    --fire-light: #FF7A45;
+    --fire-ember: #FF9A3C;
+    --coal: #0D0D0D;
+    --coal-800: #1A1A1A;
+    --coal-700: #252525;
+    --coal-600: #333333;
+    --ash: #C8C0B8;
+    --ash-light: #E8E0D8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--coal);
+    color: var(--ash-light);
+    font-family: 'Crimson Pro', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--fire);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(255,90,31,0.5);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.35;
+  }
+
+  /* NAVIGATION */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.4s ease;
+  }
+  nav.scrolled {
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,90,31,0.15);
+    padding: 0.75rem 2rem;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5rem;
+    letter-spacing: 0.15em;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .nav-logo span { color: var(--fire); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ash);
+    text-decoration: none;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 1px;
+    background: var(--fire);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: right;
+  }
+  .nav-links a:hover { color: white; }
+  .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+  /* HERO */
+  .hero {
+    height: 100vh;
+    min-height: 600px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=1600&q=80&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center 40%;
+    transform: scale(1.05);
+    transition: transform 8s ease;
+  }
+  .hero-bg.loaded { transform: scale(1); }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(13,13,13,0.3) 0%,
+      rgba(13,13,13,0.15) 30%,
+      rgba(13,13,13,0.6) 70%,
+      rgba(13,13,13,0.97) 100%
+    );
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 0 2rem 5rem;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fire-ember);
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(4rem, 12vw, 10rem);
+    line-height: 0.92;
+    color: white;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.9s ease 0.5s forwards;
+  }
+  .hero-title .fire-word { color: var(--fire); }
+  .hero-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    color: var(--ash);
+    margin-top: 1rem;
+    max-width: 480px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.9s ease 0.7s forwards;
+  }
+  .hero-actions {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.9s ease 0.9s forwards;
+  }
+
+  /* BUTTONS */
+  .btn-fire {
+    background: var(--fire);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 1rem 2.25rem;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+  .btn-fire::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--fire-light);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .btn-fire:hover::before { transform: scaleX(1); }
+  .btn-fire span { position: relative; z-index: 1; }
+  .btn-fire:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255,90,31,0.4); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--ash-light);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 1rem 2rem;
+    border: 1px solid rgba(200,192,184,0.3);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+  }
+  .btn-outline:hover {
+    border-color: var(--fire);
+    color: white;
+    background: rgba(255,90,31,0.08);
+  }
+
+  .btn-wa {
+    background: #25D366;
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.5rem;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-wa::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #20BC5A;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .btn-wa:hover::before { transform: scaleX(1); }
+  .btn-wa span { position: relative; z-index: 1; }
+  .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+
+  /* SCROLL INDICATOR */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+  }
+  .scroll-indicator span {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ash-dark);
+    writing-mode: vertical-rl;
+  }
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--ash-dark), transparent);
+    animation: scrollLine 2s ease infinite;
+  }
+
+  /* SECTION SHARED */
+  section { position: relative; z-index: 2; }
+  .section-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--fire);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: 0.04em;
+    color: white;
+    line-height: 1;
+  }
+  .section-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--fire);
+    margin: 1.5rem 0;
+  }
+
+  /* BENEFITS SECTION */
+  .benefits-section {
+    padding: 6rem 2rem;
+    background: var(--coal-800);
+    border-top: 1px solid rgba(255,90,31,0.1);
+    border-bottom: 1px solid rgba(255,90,31,0.1);
+  }
+  .benefit-card {
+    padding: 2.5rem 2rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .benefit-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .benefit-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--fire);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .benefit-card:hover::before { transform: scaleX(1); }
+  .benefit-card:hover { border-color: rgba(255,90,31,0.2); background: rgba(255,90,31,0.04); }
+  .benefit-icon {
+    width: 56px; height: 56px;
+    border: 1px solid rgba(255,90,31,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s;
+  }
+  .benefit-card:hover .benefit-icon {
+    background: rgba(255,90,31,0.1);
+    border-color: var(--fire);
+  }
+  .benefit-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.5rem;
+    letter-spacing: 0.08em;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+  .benefit-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ash);
+  }
+
+  /* CATALOG SECTION */
+  .catalog-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5px;
+    margin-top: 3rem;
+  }
+  .product-card {
+    background: var(--coal-800);
+    overflow: hidden;
+    position: relative;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.4s ease;
+  }
+  .product-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .product-card:hover {
+    box-shadow: 0 0 0 1px rgba(255,90,31,0.3), 0 20px 60px rgba(0,0,0,0.6);
+    z-index: 5;
+  }
+  .product-img-wrap {
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+  }
+  .product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.85) saturate(0.8);
+    transition: transform 0.6s ease, filter 0.6s ease;
+  }
+  .product-card:hover .product-img-wrap img {
+    transform: scale(1.08);
+    filter: brightness(0.95) saturate(1);
+  }
+  .product-badge {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--fire);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+  }
+  .product-body {
+    padding: 1.5rem;
+  }
+  .product-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.4rem;
+    letter-spacing: 0.06em;
+    color: white;
+    line-height: 1.1;
+    margin-bottom: 0.75rem;
+  }
+  .product-desc {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--ash);
+    margin-bottom: 1.25rem;
+  }
+  .product-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .product-feature {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fire-ember);
+    border: 1px solid rgba(255,154,60,0.25);
+    padding: 0.25rem 0.6rem;
+  }
+  .product-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .product-price {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+    color: var(--fire);
+    line-height: 1;
+  }
+  .product-price-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ash-dark);
+    margin-bottom: 0.2rem;
+  }
+  .product-weight {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    color: var(--ash);
+    font-size: 0.9rem;
+  }
+
+  /* TRUST SECTION */
+  .trust-section {
+    padding: 3rem 2rem;
+    background: var(--coal-700);
+    overflow: hidden;
+  }
+  .trust-ticker {
+    display: flex;
+    gap: 4rem;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+  .trust-item {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+    color: rgba(200,192,184,0.3);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+  .trust-dot {
+    width: 6px; height: 6px;
+    background: var(--fire);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ABOUT / STORY SECTION */
+  .story-section {
+    padding: 6rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .story-img {
+    position: relative;
+  }
+  .story-img img {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    filter: brightness(0.75) saturate(0.7);
+  }
+  .story-img::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: -15px;
+    right: 15px;
+    bottom: 15px;
+    border: 1px solid rgba(255,90,31,0.2);
+    z-index: -1;
+  }
+  .story-img::after {
+    content: '"FUEGO\APERFECTO"';
+    white-space: pre;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 5rem;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: rgba(255,90,31,0.06);
+    position: absolute;
+    bottom: -2rem;
+    right: -1rem;
+    z-index: -1;
+  }
+  .story-number {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 8rem;
+    color: rgba(255,90,31,0.08);
+    line-height: 1;
+    position: absolute;
+    top: -2rem;
+    right: -1rem;
+  }
+  .story-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--ash);
+    margin-top: 1.5rem;
+  }
+  .story-stat {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 2.5rem;
+  }
+  .stat-item {}
+  .stat-number {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3rem;
+    color: var(--fire);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ash-dark);
+    margin-top: 0.25rem;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--coal-900);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 4rem 2rem 2rem;
+  }
+  .footer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 4rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-brand-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 2.5rem;
+    letter-spacing: 0.08em;
+    color: white;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+  .footer-brand-name span { color: var(--fire); }
+  .footer-tagline {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    color: var(--ash-dark);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 280px;
+  }
+  .footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .social-link {
+    width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: var(--ash-dark);
+    transition: all 0.3s;
+  }
+  .social-link:hover {
+    border-color: var(--fire);
+    color: var(--fire);
+    background: rgba(255,90,31,0.08);
+  }
+  .footer-heading {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fire-ember);
+    margin-bottom: 1.5rem;
+  }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 0.75rem; }
+  .footer-links a {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    color: var(--ash);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--fire); }
+  .footer-contact p {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    color: var(--ash);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 2rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: rgba(200,192,184,0.3);
+  }
+
+  /* FLOATING WA BUTTON */
+  .wa-float {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 200;
+    width: 56px; height: 56px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    text-decoration: none;
+    transition: all 0.3s;
+    animation: pulse-wa 3s ease infinite;
+  }
+  .wa-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(37,211,102,0.5);
+    animation: none;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  @keyframes scrollLine {
+    0%, 100% { opacity: 0; transform: scaleY(0); transform-origin: top; }
+    50% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes pulse-wa {
+    0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
+    50% { box-shadow: 0 4px 30px rgba(37,211,102,0.7); }
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    92% { opacity: 1; }
+    93% { opacity: 0.8; }
+    94% { opacity: 1; }
+    96% { opacity: 0.9; }
+    97% { opacity: 1; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+    nav { padding: 1rem; }
+    .nav-links { display: none; }
+    .nav-mobile { display: flex !important; }
+    .hero-content { padding: 0 1.25rem 4rem; }
+    .story-section { grid-template-columns: 1fr; gap: 2.5rem; }
+    .story-img { display: none; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+    .product-grid { grid-template-columns: 1fr; gap: 1.5px; }
+    .catalog-section { padding: 4rem 1.25rem; }
+    .benefits-section { padding: 4rem 1.25rem; }
+    .trust-section { padding: 2rem 0; }
+  }
+
+  .nav-mobile {
+    display: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+    padding: 4px;
+  }
+  .nav-mobile span {
+    display: block;
+    width: 22px; height: 1.5px;
+    background: var(--ash-light);
+    transition: all 0.3s;
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    background: rgba(13,13,13,0.98);
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .mobile-menu.open { transform: translateX(0); }
+  .mobile-menu a {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3rem;
+    letter-spacing: 0.1em;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .mobile-menu a:hover { color: var(--fire); }
+  .mobile-close {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Floating WhatsApp -->
+<a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos." 
+   class="wa-float" target="_blank" rel="noopener" title="Contactanos por WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-close" id="mobileClose">✕</button>
+  <a href="#catalogo" onclick="closeMobile()">Catálogo</a>
+  <a href="#beneficios" onclick="closeMobile()">Beneficios</a>
+  <a href="#nosotros" onclick="closeMobile()">Nosotros</a>
+  <a href="#contacto" onclick="closeMobile()">Contacto</a>
+</div>
+
+<!-- NAVIGATION -->
+<nav id="mainNav">
+  <div class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2C9 7 5 9 5 14a7 7 0 0014 0c0-5-4-7-7-12z" fill="#FF5A1F"/>
+      <path d="M12 8c-1.5 3-3 4-3 7a3 3 0 006 0c0-3-1.5-4-3-7z" fill="#FF9A3C"/>
+    </svg>
+    IGNITE <span>BRIQUETAS</span>
+  </div>
+  <div class="nav-links">
+    <a href="#catalogo">Catálogo</a>
+    <a href="#beneficios">Beneficios</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <div class="nav-mobile" id="menuToggle" onclick="openMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero" id="inicio">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-tag">— Parrilla Premium Argentina</p>
+    <h1 class="hero-title">
+      IGNITE<br>
+      <span class="fire-word">BRIQUE</span>TAS
+    </h1>
+    <p class="hero-subtitle">El combustible que los maestros parrilleros eligen. Más temperatura, más duración, menos humo.</p>
+    <div class="hero-actions">
+      <a href="#catalogo" class="btn-fire"><span>Ver Catálogo</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="https://wa.me/5491112345678" target="_blank" class="btn-outline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Consultá Ahora
+      </a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- TRUST TICKER -->
+<div class="trust-section">
+  <div style="display:flex; overflow:hidden;">
+    <div class="trust-ticker" id="ticker">
+      <div class="trust-item"><span class="trust-dot"></span>100% Carbón Vegetal</div>
+      <div class="trust-item"><span class="trust-dot"></span>Sin Humo Excesivo</div>
+      <div class="trust-item"><span class="trust-dot"></span>Alta Temperatura</div>
+      <div class="trust-item"><span class="trust-dot"></span>Producto Argentino</div>
+      <div class="trust-item"><span class="trust-dot"></span>Ecológico Certificado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Parrilleros Profesionales</div>
+      <div class="trust-item"><span class="trust-dot"></span>Envío a Todo el País</div>
+      <div class="trust-item"><span class="trust-dot"></span>100% Carbón Vegetal</div>
+      <div class="trust-item"><span class="trust-dot"></span>Sin Humo Excesivo</div>
+      <div class="trust-item"><span class="trust-dot"></span>Alta Temperatura</div>
+      <div class="trust-item"><span class="trust-dot"></span>Producto Argentino</div>
+      <div class="trust-item"><span class="trust-dot"></span>Ecológico Certificado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Parrilleros Profesionales</div>
+      <div class="trust-item"><span class="trust-dot"></span>Envío a Todo el País</div>
+    </div>
+  </div>
+</div>
+
+<!-- BENEFITS SECTION -->
+<section class="benefits-section" id="beneficios">
+  <div style="max-width:1200px; margin:0 auto;">
+    <p class="section-tag">/ Por qué elegirnos</p>
+    <h2 class="section-title">VENTAJAS QUE<br>HACEN LA DIFERENCIA</h2>
+    <div class="section-divider"></div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.5px; margin-top:2rem;">
+      
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="benefit-title">MAYOR DURACIÓN</div>
+        <div class="benefit-text">Hasta 4 horas de combustión constante. Menos reposición, más tiempo disfrutando de tu parrilla.</div>
+      </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
+            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M8 12h8"/><path d="M12 8v8"/>
+          </svg>
+        </div>
+        <div class="benefit-title">SIN HUMO NI OLOR</div>
+        <div class="benefit-text">Combustión limpia y controlada. Ideal para espacios cerrados o terrazas donde el humo es un problema.</div>
+      </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <div class="benefit-title">100% ECOLÓGICO</div>
+        <div class="benefit-text">Fabricadas con residuos de biomasa. Sin aditivos químicos, sin deforestación. Bueno para tu parrilla y para el planeta.</div>
+      </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div class="benefit-title">ALTA TEMPERATURA</div>
+        <div class="benefit-text">Alcanza y mantiene temperaturas superiores a 900°C. El secreto de una carne sellada a la perfección.</div>
+      </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
+          </svg>
+        </div>
+        <div class="benefit-title">FÁCIL ENCENDIDO</div>
+        <div class="benefit-text">Lista para usarse en menos de 15 minutos. Sin necesidad de líquidos ni pastillas. Solo fuego y paciencia.</div>
+      </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+        </div>
+        <div class="benefit-title">HECHO EN ARGENTINA</div>
+        <div class="benefit-text">Producción local con materia prima nacional. Apoyamos el trabajo argentino y garantizamos calidad en cada bolsa.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CATALOG SECTION -->
+<section class="catalog-section" id="catalogo">
+  <p class="section-tag">/ Nuestros Productos</p>
+  <h2 class="section-title">EL CATÁLOGO<br>IGNITE</h2>
+  <div class="section-divider"></div>
+  <p style="font-family:'Crimson Pro',serif; font-style:italic; color:var(--ash); font-size:1.1rem; max-width:500px; line-height:1.6; margin-top:-0.5rem;">
+    Cada bolsa es el resultado de años de experiencia y un proceso de producción riguroso.
+  </p>
+
+  <div class="product-grid" id="productGrid">
+
+    <!-- Product 1 -->
+    <div class="product-card" data-scroll>
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop" alt="Briquetas 4kg" loading="lazy">
+        <div class="product-badge">Más Vendido</div>
+      </div>
+      <div class="product-body">
+        <div class="product-name">Briquetas de Carbón Vegetal 4 KG</div>
+        <div class="product-desc">Ideal para asados familiares. Combustión limpia, temperatura uniforme y larga duración sin reposición.</div>
+        <div class="product-features">
+          <span class="product-feature">Sin humo</span>
+          <span class="product-feature">4hs duración</span>
+          <span class="product-feature">Ecológico</span>
+        </div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price-label">Precio</div>
+            <div class="product-price">$3.200</div>
+          </div>
+          <div class="product-weight">Bolsa 4 kg</div>
+        </div>
+        <a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20me%20interesa%20el%20producto%20Briquetas%20de%20Carb%C3%B3n%20Vegetal%204kg%20que%20vi%20en%20la%20web.%20%C2%BFMe%20dan%20m%C3%A1s%20informaci%C3%B3n%3F"
+           target="_blank" class="btn-wa">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Comprar por WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card" data-scroll>
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1611735341450-74d61e660ad2?w=600&q=80&auto=format&fit=crop" alt="Briquetas 10kg" loading="lazy">
+        <div class="product-badge" style="background:var(--coal-600); color:var(--fire-ember);">Mejor Precio x kg</div>
+      </div>
+      <div class="product-body">
+        <div class="product-name">Briquetas de Carbón Vegetal 10 KG</div>
+        <div class="product-desc">Para los que parrillean seguido. El pack económico que no sacrifica calidad. Rendimiento profesional.</div>
+        <div class="product-features">
+          <span class="product-feature">Sin humo</span>
+          <span class="product-feature">+8hs duración</span>
+          <span class="product-feature">Pro</span>
+        </div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price-label">Precio</div>
+            <div class="product-price">$6.900</div>
+          </div>
+          <div class="product-weight">Bolsa 10 kg</div>
+        </div>
+        <a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20me%20interesa%20el%20producto%20Briquetas%20de%20Carb%C3%B3n%20Vegetal%2010kg%20que%20vi%20en%20la%20web.%20%C2%BFMe%20dan%20m%C3%A1s%20informaci%C3%B3n%3F"
+           target="_blank" class="btn-wa">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Comprar por WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card" data-scroll>
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&auto=format&fit=crop" alt="Briquetas Premium" loading="lazy">
+        <div class="product-badge" style="background:#8B4513; color:white;">Línea Premium</div>
+      </div>
+      <div class="product-body">
+        <div class="product-name">Briquetas Premium Quebracho 5 KG</div>
+        <div class="product-desc">Elaboradas con quebracho blanco 100%. El sabor y el aroma únicos de la madera nativa argentina en tu parrilla.</div>
+        <div class="product-features">
+          <span class="product-feature">Quebracho</span>
+          <span class="product-feature">Aroma natural</span>
+          <span class="product-feature">Premium</span>
+        </div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price-label">Precio</div>
+            <div class="product-price">$4.800</div>
+          </div>
+          <div class="product-weight">Bolsa 5 kg</div>
+        </div>
+        <a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20me%20interesa%20el%20producto%20Briquetas%20Premium%20Quebracho%205kg%20que%20vi%20en%20la%20web.%20%C2%BFMe%20dan%20m%C3%A1s%20informaci%C3%B3n%3F"
+           target="_blank" class="btn-wa">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Comprar por WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card" data-scroll>
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&q=80&auto=format&fit=crop" alt="Pack Familiar" loading="lazy">
+        <div class="product-badge">Oferta</div>
+      </div>
+      <div class="product-body">
+        <div class="product-name">Pack Familiar 3x4 KG</div>
+        <div class="product-desc">Tres bolsas de 4kg al precio especial. Para el que sabe que el buen asado se repite. Stockeate y ahorrá.</div>
+        <div class="product-features">
+          <span class="product-feature">3 bolsas</span>
+          <span class="product-feature">Ahorro 15%</span>
+          <span class="product-feature">Sin humo</span>
+        </div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price-label">Precio</div>
+            <div class="product-price">$8.200</div>
+          </div>
+          <div class="product-weight">Pack 12 kg</div>
+        </div>
+        <a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20me%20interesa%20el%20producto%20Pack%20Familiar%203x4kg%20que%20vi%20en%20la%20web.%20%C2%BFMe%20dan%20m%C3%A1s%20informaci%C3%B3n%3F"
+           target="_blank" class="btn-wa">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Comprar por WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product 5 -->
+    <div class="product-card" data-scroll>
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&q=80&auto=format&fit=crop" alt="Briquetas Gastronómico" loading="lazy">
+        <div class="product-badge" style="background:var(--coal-600); color:var(--ash-light);">Gastronomía</div>
+      </div>
+      <div class="product-body">
+        <div class="product-name">Briquetas Gastronómico 20 KG</div>
+        <div class="product-desc">Para restaurantes, carnicerías y eventos. Alta producción sin interrupciones. El preferido de los chefs profesionales.</div>
+        <div class="product-features">
+          <span class="product-feature">Restaurantes</span>
+          <span class="product-feature">+16hs</span>
+          <span class="product-feature">Granel</span>
+        </div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price-label">Precio</div>
+            <div class="product-price">$12.500</div>
+          </div>
+          <div class="product-weight">Bolsa 20 kg</div>
+        </div>
+        <a href="https://wa.me/5491112345678
+        ?text=Hola%20Ignite%20Briquetas%2C%20me%20interesa%20el%20producto%20Briquetas%20Gastron%C3%B3mico%2020kg%20que%20vi%20en%20la%20web.%20%C2%BFMe%20dan%20m%C3%A1s%20informaci%C3%B3n%3F"
+           target="_blank" class="btn-wa">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Comprar por WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Product 6 -->
+    <div class="product-card" data-scroll>
+      <div class="product-img-wrap">
+        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80&auto=format&fit=crop" alt="Kit Parrillero" loading="lazy">
+        <div class="product-badge" style="background:linear-gradient(135deg, #FF5A1F, #FF9A3C);">Combo</div>
+      </div>
+      <div class="product-body">
+        <div class="product-name">Kit Parrillero Completo</div>
+        <div class="product-desc">Briquetas 4kg + Encendedor natural + Acelerador de brasas. Todo lo que necesitás para el asado perfecto en una sola compra.</div>
+        <div class="product-features">
+          <span class="product-feature">Kit completo</span>
+          <span class="product-feature">Encendedor</span>
+          <span class="product-feature">Regalo ideal</span>
+        </div>
+        <div class="product-footer">
+          <div>
+            <div class="product-price-label">Precio</div>
+            <div class="product-price">$5.500</div>
+          </div>
+          <div class="product-weight">Kit completo</div>
+        </div>
+        <a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20me%20interesa%20el%20producto%20Kit%20Parrillero%20Completo%20que%20vi%20en%20la%20web.%20%C2%BFMe%20dan%20m%C3%A1s%20informaci%C3%B3n%3F"
+           target="_blank" class="btn-wa">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span>Comprar por WhatsApp</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STORY / ABOUT SECTION -->
+<section style="background: var(--coal-800); border-top:1px solid rgba(255,255,255,0.04);" id="nosotros">
+  <div class="story-section">
+    <div>
+      <p class="section-tag">/ Nuestra Historia</p>
+      <h2 class="section-title">NACIMOS<br>DEL FUEGO</h2>
+      <div class="section-divider"></div>
+      <p class="story-text">
+        Ignite Briquetas nació de la pasión por el asado argentino. Después de años buscando el combustible ideal y no encontrarlo, decidimos crearlo nosotros mismos.
+      </p>
+      <p class="story-text" style="margin-top:1rem;">
+        Cada briqueta está fabricada con biomasa residual, sin talar un solo árbol. Nuestro proceso garantiza uniformidad, alta densidad y una combustión que satisface hasta al parrillero más exigente.
+      </p>
+      <div class="story-stat">
+        <div class="stat-item">
+          <div class="stat-number">4H+</div>
+          <div class="stat-label">Duración promedio</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">900°</div>
+          <div class="stat-label">Temperatura máx.</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">0</div>
+          <div class="stat-label">Árboles talados</div>
+        </div>
+      </div>
+    </div>
+    <div class="story-img" style="position:relative;">
+      <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80&auto=format&fit=crop" alt="Parrilla con briquetas">
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contacto">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">IGNITE<br><span>BRIQUETAS</span></div>
+      <p class="footer-tagline">El fuego que buscabas, hecho con la madera que la tierra nos da.</p>
+      <div class="footer-social">
+        <a href="https://www.instagram.com/ignite.briquetasarg/" target="_blank" class="social-link" title="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+          </svg>
+        </a>
+        <a href="https://wa.me/5491112345678" target="_blank" class="social-link" title="WhatsApp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">Navegación</div>
+      <ul class="footer-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#catalogo">Catálogo</a></li>
+        <li><a href="#beneficios">Beneficios</a></li>
+        <li><a href="#nosotros">Nuestra Historia</a></li>
+      </ul>
+    </div>
+    <div class="footer-contact">
+      <div class="footer-heading">Contacto</div>
+      <p>📍 Buenos Aires, Argentina</p>
+      <p>📱 +54 9 11 1234-5678</p>
+      <p>📧 hola@ignitebriquetas.com</p>  
+      <div style="margin-top:1.5rem;">
+        <a href="https://wa.me/5491112345678?text=Hola%20Ignite%20Briquetas%2C%20quiero%20hacer%20un%20pedido." 
+           target="_blank" class="btn-fire" style="font-size:0.6rem;">
+          <span>Hacer un Pedido</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2025 Ignite Briquetas — Todos los derechos reservados</p>
+    <p class="footer-copy">Hecho con 🔥 en Argentina</p>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animateRing() {
+    ringX += (mouseX - ringX - 20) * 0.12;
+    ringY += (mouseY - ringY - 20) * 0.12;
+    cursorRing.style.transform = `translate(${ringX}px, ${ringY}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+    cursor.style.transform = `translate(${x}px, ${y}px)`;
+  cursorRing.style.transform = `translate(${x - 14}px, ${y - 14}px)`; 
+});
+    el.addEventListener('mouseleave', () => {
+      cursorRing.style.borderColor = 'rgba(255,90,31,0.5)';
+    });
+  });
+
+  // Nav scroll effect
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Hero bg animation
+  window.addEventListener('load', () => {
+    document.getElementById('heroBg').classList.add('loaded');
+  });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, entry.target.dataset.delay || 0);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('[data-scroll]').forEach((el, i) => {
+    el.dataset.delay = (i % 3) * 120;
+    observer.observe(el);
+  });
+
+  // Mobile menu
+  const mobileMenu = document.getElementById('mobileMenu');
+  function openMobile() { mobileMenu.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeMobile() { mobileMenu.classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('mobileClose').onclick = closeMobile;
+
+  // Smooth scroll for all anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
