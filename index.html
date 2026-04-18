@@ -813,9 +813,16 @@
     }
     .product-img-wrap {
       flex: none;
-      height: 260px;
-      min-height: 260px;
+      height: auto;
+      min-height: 0;
       width: 100%;
+    }
+    .product-img-wrap img {
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+      object-position: center;
+      background: #1A1A1A;
     }
     .product-body {
       padding: 1.75rem 1.5rem;
