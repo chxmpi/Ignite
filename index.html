@@ -145,7 +145,7 @@
   .hero-bg {
     position: absolute;
     inset: 0;
-    background-image: url('https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=1600&q=80&auto=format&fit=crop');
+    background-image: url(/Ignite/source/premium_photo-1751779508557-2bf60feecd5c.avif);
     background-size: cover;
     background-position: center 40%;
     transform: scale(1.05);
@@ -634,7 +634,6 @@
     display: flex;
     gap: 2.5rem;
   }
-  .stat-item {}
   .stat-number {
     font-family: 'Bebas Neue', cursive;
     font-size: 3rem;
@@ -888,10 +887,6 @@
 </head>
 <body>
 
-<!-- Custom cursor -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-
 <!-- Floating WhatsApp -->
 <a href="https://wa.me/5491165641643?text=Hola%20Ignite%20Briquetas%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20sus%20productos." 
    class="wa-float" target="_blank" rel="noopener" title="Contactanos por WhatsApp">
@@ -934,12 +929,13 @@
   <div class="hero-bg" id="heroBg"></div>
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <p class="hero-tag">— Parrilla Premium Argentina</p>
+    <p class="hero-tag">—  BRIQUETAS PREMIUM 100% NATURALES</p>
     <h1 class="hero-title">
       IGNITE<br>
       <span class="fire-word">BRIQUE</span>TAS
     </h1>
-    <p class="hero-subtitle">El combustible que los maestros parrilleros eligen. Más temperatura, más duración, menos humo.</p>
+    <p class="hero-subtitle"> Fuego más duradero, parejo y fácil de controlar</p>
+    <p class="hero-subtitle">Lográ una mejor experiencia en cada asado, con un fuego estable, menos humo y mayor rendimiento.</p>
     <div class="hero-actions">
       <a href="#catalogo" class="btn-fire"><span>Ver Catálogo</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -952,7 +948,6 @@
   </div>
   <div class="scroll-indicator">
     <div class="scroll-line"></div>
-    <span>Scroll</span>
   </div>
 </section>
 
@@ -960,18 +955,22 @@
 <div class="trust-section">
   <div style="display:flex; overflow:hidden;">
     <div class="trust-ticker" id="ticker">
-      <div class="trust-item"><span class="trust-dot"></span>100% Carbón Vegetal</div>
-      <div class="trust-item"><span class="trust-dot"></span>Sin Humo Excesivo</div>
-      <div class="trust-item"><span class="trust-dot"></span>Alta Temperatura</div>
-      <div class="trust-item"><span class="trust-dot"></span>Producto Argentino</div>
-      <div class="trust-item"><span class="trust-dot"></span>Ecológico Certificado</div>
-      <div class="trust-item"><span class="trust-dot"></span>Parrilleros Profesionales</div>
-      <div class="trust-item"><span class="trust-dot"></span>100% Carbón Vegetal</div>
-      <div class="trust-item"><span class="trust-dot"></span>Sin Humo Excesivo</div>
-      <div class="trust-item"><span class="trust-dot"></span>Alta Temperatura</div>
-      <div class="trust-item"><span class="trust-dot"></span>Producto Argentino</div>
-      <div class="trust-item"><span class="trust-dot"></span>Ecológico Certificado</div>
-      <div class="trust-item"><span class="trust-dot"></span>Parrilleros Profesionales</div>
+      <div class="trust-item"><span class="trust-dot"></span>Parrilla / asado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Chulengo</div>
+      <div class="trust-item"><span class="trust-dot"></span>Plancha</div>
+      <div class="trust-item"><span class="trust-dot"></span>Disco de arado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Kamado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Ahumadores (smoker)</div>
+      <div class="trust-item"><span class="trust-dot"></span>Horno de barro</div>
+      <div class="trust-item"><span class="trust-dot"></span>Camping y exteriores</div>
+      <div class="trust-item"><span class="trust-dot"></span>Parrilla / asado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Chulengo</div>
+      <div class="trust-item"><span class="trust-dot"></span>Plancha</div>
+      <div class="trust-item"><span class="trust-dot"></span>Disco de arado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Kamado</div>
+      <div class="trust-item"><span class="trust-dot"></span>Ahumadores (smoker)</div>
+      <div class="trust-item"><span class="trust-dot"></span>Horno de barro</div>
+      <div class="trust-item"><span class="trust-dot"></span>Camping y exteriores</div>
     </div>
   </div>
 </div>
@@ -985,64 +984,49 @@
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.5px; margin-top:2rem;">
       
       <div class="benefit-card" data-scroll>
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
         <div class="benefit-title">MAYOR DURACIÓN</div>
-        <div class="benefit-text">Hasta 4 horas de combustión constante. Menos reposición, más tiempo disfrutando de tu parrilla.</div>
+        <div class="benefit-text">Hasta 3.5 horas de combustión constante. Menos reposición, más tiempo disfrutando de tu parrilla.</div>
       </div>
 
       <div class="benefit-card" data-scroll>
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
-            <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M8 12h8"/><path d="M12 8v8"/>
-          </svg>
-        </div>
         <div class="benefit-title">SIN HUMO NI OLOR</div>
         <div class="benefit-text">Combustión limpia y controlada. Ideal para espacios cerrados o terrazas donde el humo es un problema.</div>
       </div>
 
       <div class="benefit-card" data-scroll>
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-          </svg>
-        </div>
+      
         <div class="benefit-title">100% ECOLÓGICO</div>
         <div class="benefit-text">Fabricadas con residuos de biomasa. Sin aditivos químicos, sin deforestación. Bueno para tu parrilla y para el planeta.</div>
       </div>
 
       <div class="benefit-card" data-scroll>
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-        </div>
         <div class="benefit-title">ALTA TEMPERATURA</div>
         <div class="benefit-text">Alcanza y mantiene temperaturas superiores a 900°C. El secreto de una carne sellada a la perfección.</div>
       </div>
 
       <div class="benefit-card" data-scroll>
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
-          </svg>
-        </div>
         <div class="benefit-title">FÁCIL ENCENDIDO</div>
         <div class="benefit-text">Lista para usarse en menos de 15 minutos. Sin necesidad de líquidos ni pastillas. Solo fuego y paciencia.</div>
       </div>
 
-      <div class="benefit-card" data-scroll>
-        <div class="benefit-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5A1F" stroke-width="1.5">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-          </svg>
-        </div>
+       <div class="benefit-card" data-scroll>
         <div class="benefit-title">HECHO EN ARGENTINA</div>
         <div class="benefit-text">Producción local con materia prima nacional. Apoyamos el trabajo argentino y garantizamos calidad en cada bolsa.</div>
       </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-title">USOS APTOS</div>
+        <div class="benefit-text">
+        <p> Parrilla / asado - Chulengo - Plancha - Kamado - Disco de arado - Ahumadores (smoker) - Horno de barro - Camping y exteriores</p>
+        </div>
+      </div>
+
+      <div class="benefit-card" data-scroll>
+        <div class="benefit-title">MÍNIMA CENIZA</div>
+        <div class="benefit-text"> Limpieza rápida y sencilla para que tu única preocupación sea el punto de la carne.</div>
+      </div>
+
+
 
     </div>
   </div>
@@ -1069,8 +1053,8 @@
         <div class="product-name">Briquetas de Carbón Vegetal 4 KG</div>
         <div class="product-desc">Ideal para asados familiares. Combustión limpia, temperatura uniforme y larga duración sin reposición.</div>
         <div class="product-features">
-          <span class="product-feature">Sin humo</span>
-          <span class="product-feature">4hs duración</span>
+          <span class="product-feature">Humo reducido</span>
+          <span class="product-feature">3.5hs duración</span>
           <span class="product-feature">Ecológico</span>
         </div>
         <div class="product-footer">
@@ -1117,29 +1101,10 @@
       <p class="section-tag">/ Nuestra Historia</p>
       <h2 class="section-title">NACIMOS<br>DEL FUEGO</h2>
       <div class="section-divider"></div>
-      <p class="story-text">
-        Ignite Briquetas nació de la pasión por el asado argentino. Después de años buscando el combustible ideal y no encontrarlo, decidimos crearlo nosotros mismos.
-      </p>
-      <p class="story-text" style="margin-top:1rem;">
-        Cada briqueta está fabricada con biomasa residual, sin talar un solo árbol. Nuestro proceso garantiza uniformidad, alta densidad y una combustión que satisface hasta al parrillero más exigente.
-      </p>
-      <div class="story-stat">
-        <div class="stat-item">
-          <div class="stat-number">4H+</div>
-          <div class="stat-label">Duración promedio</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">900°</div>
-          <div class="stat-label">Temperatura máx.</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">0</div>
-          <div class="stat-label">Árboles talados</div>
-        </div>
-      </div>
+      <p class="story-text">Soy Luca Gonzales y arranqué este emprendimiento buscando algo simple: un fuego que realmente funcione bien. </p>
+      <p class="story-text" style="margin-top:1rem;">Después de probar distintas opciones, decidí ofrecer briquetas que cumplan con lo que prometen: duración, estabilidad y buen rendimiento.     </p>
+    <p class="story-text" style="margin-top:1rem;">Hoy ayudamos a que más personas disfruten de un mejor fuego, sin complicaciones.</p>
     </div>
-    <div class="story-img" style="position:relative;">
-      <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80&auto=format&fit=crop" alt="Parrilla con briquetas">
     </div>
   </div>
 </section>
@@ -1191,48 +1156,21 @@
 </footer>
 
 <script>
-  // Custom cursor
-  const cursor = document.getElementById('cursor');
-  const cursorRing = document.getElementById('cursorRing');
-  let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-  document.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  });
-
-  function animateRing() {
-    ringX += (mouseX - ringX - 20) * 0.12;
-    ringY += (mouseY - ringY - 20) * 0.12;
-    cursorRing.style.transform = `translate(${ringX}px, ${ringY}px)`;
-    requestAnimationFrame(animateRing);
-  }
-  animateRing();
-
-  document.querySelectorAll('a, button').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-    cursor.style.transform = `translate(${x}px, ${y}px)`;
-  cursorRing.style.transform = `translate(${x - 14}px, ${y - 14}px)`; 
-});
-    el.addEventListener('mouseleave', () => {
-      cursorRing.style.borderColor = 'rgba(255,90,31,0.5)';
-    });
-  });
-
-  // Nav scroll effect
+  // Nav scroll effect: cambia el estilo del menú al hacer scroll
   const nav = document.getElementById('mainNav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 60);
   });
 
-  // Hero bg animation
+  // Hero bg animation: activa el zoom suave del fondo al cargar
   window.addEventListener('load', () => {
-    document.getElementById('heroBg').classList.add('loaded');
+    const heroBg = document.getElementById('heroBg');
+    if (heroBg) heroBg.classList.add('loaded');
   });
 
-  // Scroll reveal
+  // Scroll reveal: hace que los elementos aparezcan suavemente al bajar
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         setTimeout(() => {
           entry.target.classList.add('visible');
@@ -1247,13 +1185,21 @@
     observer.observe(el);
   });
 
-  // Mobile menu
+  // Mobile menu: lógica para abrir y cerrar el menú en celulares
   const mobileMenu = document.getElementById('mobileMenu');
-  function openMobile() { mobileMenu.classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeMobile() { mobileMenu.classList.remove('open'); document.body.style.overflow = ''; }
-  document.getElementById('mobileClose').onclick = closeMobile;
+  function openMobile() { 
+    mobileMenu.classList.add('open'); 
+    document.body.style.overflow = 'hidden'; 
+  }
+  function closeMobile() { 
+    mobileMenu.classList.remove('open'); 
+    document.body.style.overflow = ''; 
+  }
+  
+  const closeBtn = document.getElementById('mobileClose');
+  if (closeBtn) closeBtn.onclick = closeMobile;
 
-  // Smooth scroll for all anchor links
+  // Smooth scroll: hace que al hacer clic en los links el salto sea fluido
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const target = document.querySelector(a.getAttribute('href'));
